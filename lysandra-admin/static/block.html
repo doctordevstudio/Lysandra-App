@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lysandra Admin — Block</title>
+<link rel="icon" href="/static/img/icon.png">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="main">
+  <div class="content">
+    <div class="toolbar" style="justify-content:space-between;">
+      <div id="range-picker"></div>
+      <button class="btn" id="new-btn">+ Block Domain(s)</button>
+    </div>
+
+    <div class="grid">
+      <div class="card stat-card" id="hits-card"><div class="label">Total Blocked Hits</div><div class="value">0</div></div>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead><tr><th>Domain</th><th>Message</th><th>Added</th><th></th></tr></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="form-modal">
+  <div class="modal">
+    <h2>Block Domain(s)</h2>
+    <div class="field"><label>Domain(s) — one per line or comma-separated</label><textarea id="f-domains" placeholder="example.com&#10;another-site.net"></textarea></div>
+    <div class="field"><label>Message shown to users (text or HTML)</label><textarea id="f-message"></textarea></div>
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button class="btn secondary" id="form-cancel">Cancel</button>
+      <button class="btn" id="form-save">Block</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="hits-modal">
+  <div class="modal">
+    <h2>Blocked hits</h2>
+    <div class="field"><label>Date (IST)</label><input type="date" id="hits-date"></div>
+    <table><thead><tr><th>Device</th><th>IP</th><th>Domain</th><th>Time</th></tr></thead><tbody id="hits-body"></tbody></table>
+    <div class="load-more" id="hits-load-more" style="display:none;"><button class="btn secondary" id="hits-load-more-btn">Load more</button></div>
+    <div style="text-align:right; margin-top:14px;"><button class="btn secondary" id="hits-close">Close</button></div>
+  </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/block.js"></script>
+</body>
+</html>

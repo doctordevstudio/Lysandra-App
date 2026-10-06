@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lysandra Admin — Dashboard</title>
+<link rel="icon" href="/static/img/icon.png">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="main">
+  <div class="content">
+    <div id="range-picker"></div>
+
+    <div class="grid" id="stat-cards"></div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Ads breakdown</h2>
+      <div id="ads-breakdown"></div>
+    </div>
+
+    <div class="card">
+      <div class="toolbar" style="justify-content:space-between;">
+        <h2 style="margin:0;">Top 50 users by fetch count</h2>
+      </div>
+      <table id="top-users-table">
+        <thead><tr><th>Device</th><th>Fetches</th><th>Interstitials</th><th>Rewarded</th><th>Last IP</th><th>Last seen</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <h2 id="modal-title">Details</h2>
+    <div id="modal-body"></div>
+    <div class="load-more" id="modal-load-more" style="display:none;"><button class="btn secondary" id="modal-load-more-btn">Load more</button></div>
+    <div style="text-align:right; margin-top:14px;"><button class="btn secondary" id="modal-close">Close</button></div>
+  </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/dashboard.js"></script>
+</body>
+</html>

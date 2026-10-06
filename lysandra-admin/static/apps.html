@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lysandra Admin — Supported Platforms</title>
+<link rel="icon" href="/static/img/icon.png">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="main">
+  <div class="content">
+    <div class="toolbar" style="justify-content:space-between;">
+      <h1 style="margin:0;">Supported Platforms (Apps tab)</h1>
+      <button class="btn" id="new-btn">+ Add Platform</button>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>#</th><th>Icon</th><th>Name</th><th>URL</th><th>Highlight</th><th>Status</th><th></th></tr></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="form-modal">
+  <div class="modal">
+    <h2 id="form-title">Add Platform</h2>
+    <div class="field"><label>Name</label><input id="f-name"></div>
+    <div class="field"><label>Icon URL</label><input id="f-icon"></div>
+    <div class="field"><label>URL (optional, informational)</label><input id="f-url"></div>
+    <div class="field"><label>Sort order</label><input id="f-sort" type="number" value="0"></div>
+    <div class="field"><label><input type="checkbox" id="f-highlight" style="width:auto; margin-right:6px;"> Highlight (shaking animation in app)</label></div>
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button class="btn secondary" id="form-cancel">Cancel</button>
+      <button class="btn" id="form-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script>
+let editingId = null;
+
+async function loadList() {
+  const data = await api("/api/admin/supported_apps");
+  const tbody = document.getElementById("table-body");
+  tbody.innerHTML = data.items.map(item => `
+    <tr>
+      <td>${item.sort_order ?? 0}</td>
+      <td><img src="${item.icon_url}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;"></td>
+      <td>${item.name}</td>
+      <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis;">${item.url || "-"}</td>
+      <td>${item.highlight ? "✨" : "-"}</td>
+      <td><span class="pill ${item.enabled === false ? "off" : "on"}">${item.enabled === false ? "Disabled" : "Enabled"}</span></td>
+      <td>
+        <button class="btn secondary edit-btn" data-id="${item.id}">Edit</button>
+        <button class="btn danger delete-btn" data-id="${item.id}">Delete</button>
+      </td>
+    </tr>
+  `).join("");
+  tbody.querySelectorAll(".edit-btn").forEach(el => {
+    el.onclick = () => openForm(data.items.find(i => i.id === el.dataset.id));
+  });
+  tbody.querySelectorAll(".delete-btn").forEach(el => {
+    el.onclick = async () => {
+      if (!confirm("Delete this platform?")) return;
+      await api(`/api/admin/supported_apps/${el.dataset.id}`, { method: "DELETE" });
+      toast("Deleted");
+      loadList();
+    };
+  });
+}
+
+function openForm(existing) {
+  editingId = existing ? existing.id : null;
+  document.getElementById("form-title").textContent = existing ? "Edit Platform" : "Add Platform";
+  document.getElementById("f-name").value = existing?.name || "";
+  document.getElementById("f-icon").value = existing?.icon_url || "";
+  document.getElementById("f-url").value = existing?.url || "";
+  document.getElementById("f-sort").value = existing?.sort_order ?? 0;
+  document.getElementById("f-highlight").checked = !!existing?.highlight;
+  document.getElementById("form-modal").classList.add("open");
+}
+
+document.getElementById("new-btn").addEventListener("click", () => openForm(null));
+document.getElementById("form-cancel").addEventListener("click", () => document.getElementById("form-modal").classList.remove("open"));
+document.getElementById("form-save").addEventListener("click", async () => {
+  const body = {
+    name: document.getElementById("f-name").value.trim(),
+    icon_url: document.getElementById("f-icon").value.trim(),
+    url: document.getElementById("f-url").value.trim() || null,
+    sort_order: parseInt(document.getElementById("f-sort").value || "0", 10),
+    highlight: document.getElementById("f-highlight").checked,
+  };
+  if (!body.name || !body.icon_url) { toast("Name and icon URL are required", true); return; }
+  if (editingId) await api(`/api/admin/supported_apps/${editingId}`, { method: "PATCH", body });
+  else await api("/api/admin/supported_apps", { method: "POST", body });
+  document.getElementById("form-modal").classList.remove("open");
+  toast("Saved");
+  loadList();
+});
+
+loadList();
+</script>
+</body>
+</html>

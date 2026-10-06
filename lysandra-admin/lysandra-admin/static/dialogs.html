@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lysandra Admin — Dialog</title>
+<link rel="icon" href="/static/img/icon.png">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="main">
+  <div class="content">
+    <div class="toolbar" style="justify-content:space-between;">
+      <div id="range-picker"></div>
+      <button class="btn" id="new-btn">+ New Dialog</button>
+    </div>
+
+    <div class="grid">
+      <div class="card stat-card"><div class="label">Total Views</div><div class="value" id="views-value">0</div></div>
+      <div class="card stat-card"><div class="label">Total Clicks</div><div class="value" id="clicks-value">0</div></div>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead><tr><th>#</th><th>Message</th><th>Image</th><th>Views</th><th>Clicks</th><th>Status</th><th></th></tr></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="form-modal">
+  <div class="modal">
+    <h2 id="form-title">New Dialog</h2>
+    <div class="field"><label>Message (text or HTML)</label><textarea id="f-message"></textarea></div>
+    <div class="field"><label>Image URL (optional)</label><input id="f-image"></div>
+    <div class="field"><label>On-click URL (optional)</label><input id="f-click"></div>
+    <div class="field"><label>Sort order</label><input id="f-sort" type="number" value="0"></div>
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button class="btn secondary" id="form-cancel">Cancel</button>
+      <button class="btn" id="form-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="viewers-modal">
+  <div class="modal">
+    <h2 id="viewers-title">Viewers</h2>
+    <div class="toolbar" style="margin-bottom:10px;">
+      <button class="btn secondary" data-which="view" id="show-viewers">Viewed by</button>
+      <button class="btn secondary" data-which="click" id="show-clickers">Clicked by</button>
+    </div>
+    <table><thead><tr><th>Device</th><th>IP</th><th>Time</th></tr></thead><tbody id="viewers-body"></tbody></table>
+    <div class="load-more" id="viewers-load-more" style="display:none;"><button class="btn secondary" id="viewers-load-more-btn">Load more</button></div>
+    <div style="text-align:right; margin-top:14px;"><button class="btn secondary" id="viewers-close">Close</button></div>
+  </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/common.js"></script>
+<script>const ENTITY = "dialogs"; const FIELD_SET = "dialog";</script>
+<script src="/static/js/dialog_carousel.js"></script>
+</body>
+</html>
