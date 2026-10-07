@@ -12,6 +12,9 @@ class Settings:
     FIREBASE_SERVICE_ACCOUNT_FILE: str = os.getenv("FIREBASE_SERVICE_ACCOUNT_FILE", "")
     FIREBASE_DB_URL: str = os.getenv("FIREBASE_DB_URL", "")
 
+    ADMIN_USERNAME: str = os.getenv("ADMIN_USERNAME", "")
+    ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "")
+
     SESSION_SECRET: str = os.getenv("SESSION_SECRET", "")
     SESSION_TTL_MINUTES: int = int(os.getenv("SESSION_TTL_MINUTES", "15"))
     LOCKOUT_MAX_ATTEMPTS: int = int(os.getenv("LOCKOUT_MAX_ATTEMPTS", "3"))
@@ -22,7 +25,7 @@ class Settings:
     MAIN_BACKEND_ADMIN_TOKEN: str = os.getenv("MAIN_BACKEND_ADMIN_TOKEN", "")
 
     def validate(self):
-        missing = [n for n in ("SESSION_SECRET", "FIREBASE_DB_URL") if not getattr(self, n)]
+        missing = [n for n in ("SESSION_SECRET", "FIREBASE_DB_URL", "ADMIN_USERNAME", "ADMIN_PASSWORD") if not getattr(self, n)]
         if missing:
             raise RuntimeError(f"Missing required env vars: {', '.join(missing)}")
 

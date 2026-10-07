@@ -6,6 +6,10 @@ services:
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
       - key: SESSION_SECRET
         sync: false
       - key: FIREBASE_SERVICE_ACCOUNT_JSON

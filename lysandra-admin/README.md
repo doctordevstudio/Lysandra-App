@@ -7,10 +7,9 @@ as the main backend.
 ## Setup
 
 ```bash
-cp .env.example .env            # fill in every value
+cp .env.example .env            # fill in every value, including ADMIN_USERNAME / ADMIN_PASSWORD
 pip install -r requirements.txt
 openssl rand -hex 32            # -> SESSION_SECRET
-python -m scripts.create_admin  # create your first login
 uvicorn app.main:app --reload --port 8001
 ```
 
@@ -23,8 +22,9 @@ for the main backend's periodic refresh.
 
 ## What's implemented
 
-**Auth**: bcrypt-hashed passwords (created via the CLI script, never via an
-API route, to keep "create an admin" off the public surface). One active
+**Auth**: credentials are the raw `ADMIN_USERNAME` / `ADMIN_PASSWORD` env
+vars, compared with a constant-time check (no hashing, no stored account,
+no setup script -- set the two env vars and log in). One active
 session per username (a new login invalidates the previous one), 15-minute
 *sliding* expiry (every authenticated action resets the clock, per spec),
 httpOnly+SameSite=Strict cookies, and a custom-header check as lightweight
@@ -94,9 +94,9 @@ Set up `.indexOn` for anything queried by child key, at minimum:
 ## Deploy to Render (free tier)
 
 Same pattern as the main backend: push to GitHub, connect via `render.yaml`,
-fill in the `sync: false` env vars in the dashboard, then run
-`python -m scripts.create_admin` once (e.g. via Render's shell, or locally
-against the same Firebase project) to create your login.
+fill in the `sync: false` env vars in the dashboard -- including
+`ADMIN_USERNAME` and `ADMIN_PASSWORD`, which *are* your login, directly.
+Nothing else to run or create.
 
 ## Theming
 

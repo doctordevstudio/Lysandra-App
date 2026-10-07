@@ -5,10 +5,12 @@ expiry, 3-failed-attempts -> 24h lockout keyed by client fingerprint.
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel
 
+import time
+
 from app.config import settings
 from app.firebase_client import ref
 from app.security import (create_session, destroy_session, fingerprint_hash, is_locked,
-                           record_failed_attempt, reset_attempts, verify_password)
+                           record_failed_attempt, reset_attempts, verify_admin_credentials)
 from app.utils.admin_log import log_admin_action
 
 router = APIRouter()
@@ -33,12 +35,11 @@ async def login(payload: LoginBody, request: Request, response: Response):
     if locked:
         raise HTTPException(423, {"locked": True, "locked_until": locked_until})
 
-    user_data = ref(f"/admin_auth/users/{payload.username}").get()
-    ok = bool(user_data) and verify_password(payload.password, user_data.get("password_hash", ""))
+    ok = verify_admin_credentials(payload.username, payload.password)
 
     ref(f"/admin_auth/login_attempts/{payload.username}").push({
         "ip": ip, "fingerprint": fp_hash, "success": ok,
-        "ts": int(__import__("time").time() * 1000),
+        "ts": int(time.time() * 1000),
     })
 
     if not ok:

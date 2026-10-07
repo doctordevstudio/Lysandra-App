@@ -46,20 +46,37 @@ function buildLayout(activeKey, title) {
     el.addEventListener("click", () => { window.location.href = "/" + el.dataset.nav; });
   });
 
+  const overlay = document.createElement("div");
+  overlay.className = "sidebar-overlay";
+
   const topbar = document.createElement("div");
   topbar.className = "topbar";
   topbar.innerHTML = `
-    <h1>${title}</h1>
-    <div style="display:flex;align-items:center;gap:14px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button class="menu-toggle" id="menu-toggle-btn" aria-label="Menu">☰</button>
+      <h1>${title}</h1>
+    </div>
+    <div class="topbar-actions">
       <span id="session-countdown" style="font-size:12px;color:var(--text-dim);"></span>
       <button class="theme-toggle" id="theme-toggle-btn" title="Toggle day/night">🌓</button>
       <button class="btn secondary" id="logout-btn">Log out</button>
     </div>
   `;
 
+  document.body.prepend(overlay);
   document.body.prepend(topbar);
   document.body.prepend(sidebar);
   document.body.classList.add("app-shell");
+
+  function closeMobileSidebar() {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("open");
+  }
+  document.getElementById("menu-toggle-btn").addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle("open");
+  });
+  overlay.addEventListener("click", closeMobileSidebar);
 
   document.getElementById("theme-toggle-btn").addEventListener("click", toggleTheme);
   document.getElementById("logout-btn").addEventListener("click", async () => {
@@ -108,9 +125,9 @@ function buildRangePicker(container, onChange) {
     <button data-r="yesterday">Yesterday</button>
     <button data-r="all">All time</button>
     <button data-r="custom">Custom</button>
-    <span id="custom-range-inputs" style="display:none; gap:6px; align-items:center;">
-      <input type="date" id="range-start" style="width:130px;">
-      <input type="date" id="range-end" style="width:130px;">
+    <span id="custom-range-inputs" style="display:none; gap:6px; align-items:center; flex-wrap: wrap;">
+      <input type="date" id="range-start" style="width:130px; min-width:0; flex:1 1 130px;">
+      <input type="date" id="range-end" style="width:130px; min-width:0; flex:1 1 130px;">
       <button class="btn" id="range-apply" style="padding:6px 10px;">Go</button>
     </span>
   `;

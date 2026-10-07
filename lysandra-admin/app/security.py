@@ -1,26 +1,27 @@
 """
-Admin auth: bcrypt password hashing, single-active-session enforcement with
-15-minute sliding expiry, and fingerprint-based lockout after 3 failed logins.
+Admin auth: credentials are the raw ADMIN_USERNAME / ADMIN_PASSWORD env vars
+(no stored hash, no Firebase-held account, no setup script -- just set them
+on Render and log in). Session management (single active session, 15-min
+sliding expiry) and fingerprint-based lockout after 3 failed logins are
+unchanged by that.
 """
 import hashlib
+import hmac
 import secrets
 import time
-
-import bcrypt
 
 from app.config import settings
 from app.firebase_client import ref
 
 
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-
-
-def verify_password(password: str, password_hash: str) -> bool:
-    try:
-        return bcrypt.checkpw(password.encode(), password_hash.encode())
-    except Exception:
-        return False
+def verify_admin_credentials(username: str, password: str) -> bool:
+    """Constant-time comparison against the raw env-var credentials, so a
+    mistyped password can't be distinguished by response timing from a
+    correct one -- doesn't change where the credentials live, just how
+    they're compared."""
+    username_ok = hmac.compare_digest(username.encode(), settings.ADMIN_USERNAME.encode())
+    password_ok = hmac.compare_digest(password.encode(), settings.ADMIN_PASSWORD.encode())
+    return username_ok and password_ok
 
 
 def fingerprint_hash(raw_fp: str, ip: str) -> str:
