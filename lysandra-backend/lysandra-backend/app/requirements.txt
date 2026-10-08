@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+yt-dlp
+firebase-admin
+python-dotenv
+cryptography
+pydantic
+httpx
+slowapi
+cachetools
