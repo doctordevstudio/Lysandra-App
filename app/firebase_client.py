@@ -25,7 +25,21 @@ def init_firebase() -> None:
     if firebase_admin._apps:
         return
     if settings.FIREBASE_SERVICE_ACCOUNT_JSON:
-        cred_data = json.loads(settings.FIREBASE_SERVICE_ACCOUNT_JSON)
+        raw = settings.FIREBASE_SERVICE_ACCOUNT_JSON.strip()
+        try:
+            cred_data = json.loads(raw)
+        except json.JSONDecodeError as e:
+            snippet = raw[:20].replace("\n", "\\n")
+            raise RuntimeError(
+                "FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON "
+                f"({e}). The value starts with: {snippet!r} -- it must start "
+                "with '{' and end with '}' and nothing else. A common cause "
+                "is accidentally copying a line number or an extra quote "
+                "along with the JSON when pasting it into Render's env var "
+                "box; re-copy just the JSON itself, or use "
+                "FIREBASE_SERVICE_ACCOUNT_FILE with a Render Secret File "
+                "instead to avoid this entirely."
+            ) from e
         cred = credentials.Certificate(cred_data)
     elif settings.FIREBASE_SERVICE_ACCOUNT_FILE:
         cred = credentials.Certificate(settings.FIREBASE_SERVICE_ACCOUNT_FILE)

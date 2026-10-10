@@ -1,15 +1,16 @@
 """
 Full app config editor: ad network credentials + enable/disable, theme,
 Terms/Privacy/Support/Developer content, maintenance mode. Every save
-pushes /config/* to Firebase AND pokes the main backend's
-/internal/reload-config so changes go live immediately (no 60s wait).
+pushes /config/* to Firebase AND refreshes the in-memory config_cache that
+the app-facing /api/v1/* routes read from, so changes go live immediately
+(no waiting for the periodic refresh). This used to be a cross-service
+HTTP call to a separate backend process; now that the admin panel and the
+backend share one process, it's just a direct function call.
 """
-import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.config import settings
 from app.deps import require_admin
-from app.firebase_client import ref
+from app.firebase_client import config_cache, ref
 from app.utils.admin_log import log_admin_action
 
 router = APIRouter()
@@ -37,17 +38,6 @@ ALLOWED_SETTINGS_KEYS = {
 }
 
 
-async def _reload_main_backend():
-    if not settings.MAIN_BACKEND_RELOAD_URL:
-        return
-    try:
-        async with httpx.AsyncClient(timeout=5) as client:
-            await client.post(settings.MAIN_BACKEND_RELOAD_URL,
-                               headers={"X-Admin-Token": settings.MAIN_BACKEND_ADMIN_TOKEN})
-    except Exception:
-        pass  # best effort -- the main backend's own periodic refresh will pick it up anyway
-
-
 @router.get("/api/admin/settings")
 async def get_settings(admin=Depends(require_admin)):
     data = ref("/config").get() or {}
@@ -61,6 +51,6 @@ async def update_settings(payload: dict, request: Request, admin=Depends(require
     if not update:
         raise HTTPException(400, "Nothing valid to update")
     ref("/config").update(update)
-    await _reload_main_backend()
+    config_cache.refresh()
     log_admin_action(admin, "settings_update", request.client.host, {"keys": list(update.keys())})
     return {"updated": list(update.keys())}

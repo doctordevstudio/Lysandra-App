@@ -9,7 +9,7 @@ import time
 
 from app.config import settings
 from app.firebase_client import ref
-from app.security import (create_session, destroy_session, fingerprint_hash, is_locked,
+from app.admin_security import (create_session, destroy_session, fingerprint_hash, is_locked,
                            record_failed_attempt, reset_attempts, verify_admin_credentials)
 from app.utils.admin_log import log_admin_action
 

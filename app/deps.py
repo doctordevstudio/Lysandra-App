@@ -1,6 +1,6 @@
 from fastapi import Cookie, HTTPException, Request
 
-from app.security import validate_and_touch_session
+from app.admin_security import validate_and_touch_session
 
 
 async def require_admin(request: Request, admin_user: str | None = Cookie(default=None),
