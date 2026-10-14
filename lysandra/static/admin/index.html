@@ -5,15 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Lysandra Admin</title>
-<link rel="icon" href="static/favicon.png">
+<meta name="lys-admin" content="{{ADMIN_PATH}}">
+<link rel="icon" href="{{ADMIN_PATH}}/static/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/admin.css">
+<link rel="stylesheet" href="{{ADMIN_PATH}}/static/admin.css">
 </head>
 <body>
 <div class="dots" aria-hidden="true"></div>
-<div id="app"></div>
+<div id="app" style="padding:48px;font-family:system-ui,sans-serif;color:#5b7197">Loading admin panel…</div>
 <div id="toast"></div>
-<script src="static/admin.js"></script>
+<script src="{{ADMIN_PATH}}/static/admin.js"></script>
 </body>
 </html>
