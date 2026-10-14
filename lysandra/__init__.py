@@ -3,7 +3,7 @@ import os
 import threading
 import time
 
-from flask import Flask, Response, abort, jsonify, request, send_from_directory
+from flask import Flask, Response, abort, jsonify, redirect, request, send_from_directory
 
 from . import api_admin, api_app, site
 from .config import Settings
@@ -33,6 +33,11 @@ def create_app(settings=None, db=None):
 
     static_dir = os.path.join(os.path.dirname(__file__), "static", "admin")
 
+    def under(path, prefix):
+        """True when `path` is the prefix itself or lives below it (segment-aware, unlike str.startswith)."""
+        prefix = prefix.rstrip("/")
+        return path == prefix or path.startswith(prefix + "/")
+
     # ------------------------------------------------------------ rate limit on EVERY endpoint
     # (route group, requests, window seconds) – first matching prefix wins; everything else falls into "site"
     RATE_RULES = [
@@ -52,7 +57,7 @@ def create_app(settings=None, db=None):
         ip = ctx.client_ip()
         group, limit, window = "site", 120, 60
         for prefix, g_, lim, win in RATE_RULES:
-            if request.path.startswith(prefix):
+            if under(request.path, prefix):          # "/a" must not capture "/api/..." (short ADMIN_PATH values)
                 group, limit, window = g_, lim, win
                 break
         if not ctx.limiter.allow(f"rl:{group}:{ip}", limit, window):
@@ -74,7 +79,7 @@ def create_app(settings=None, db=None):
         resp.headers.setdefault("Referrer-Policy", "no-referrer")
         resp.headers.setdefault("X-Frame-Options", "DENY")
         resp.headers.pop("Server", None)
-        if request.path.startswith(admin_path):
+        if under(request.path, admin_path):
             resp.headers["Cache-Control"] = "no-store"
             resp.headers["X-Robots-Tag"] = "noindex, nofollow"
             resp.headers["Content-Security-Policy"] = (
@@ -95,10 +100,18 @@ def create_app(settings=None, db=None):
 
     site.init(app, ctx)
 
+    with open(os.path.join(static_dir, "index.html"), encoding="utf-8") as fh:
+        admin_html = fh.read().replace("{{ADMIN_PATH}}", admin_path)
+
     @app.route(admin_path)
+    def admin_redirect():
+        # "/panel" -> "/panel/": the page works from both, but one canonical URL avoids relative-path surprises
+        return redirect(admin_path + "/", code=302)
+
     @app.route(admin_path + "/")
     def admin_index():
-        return send_from_directory(static_dir, "index.html")
+        # asset URLs are absolute (they contain the configured ADMIN_PATH), so the panel never shows a blank page
+        return Response(admin_html, mimetype="text/html")
 
     @app.route(admin_path + "/static/<path:name>")
     def admin_static(name):
