@@ -2,7 +2,11 @@
 /* Lysandra admin panel – vanilla JS. All dynamic text goes through esc(); no inline scripts (CSP). */
 const $ = (s, r = document) => r.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
-const BASE = location.pathname.replace(/\/+$/, '') + '/api';
+const ADMIN_ROOT = ((document.querySelector('meta[name="lys-admin"]') || {}).content || location.pathname).replace(/\/+$/, '');
+const BASE = ADMIN_ROOT + '/api';
+const ASSET = ADMIN_ROOT + '/static/';
+// if anything fails while starting, say so instead of leaving a blank page
+window.addEventListener('error', e => { const a = document.getElementById('app'); if (a && /^\s*Loading/.test(a.textContent)) a.textContent = 'Admin panel error: ' + e.message; });
 const S = {csrf: '', user: '', page: 'dashboard', range: null, idle: 0};
 const fmt = ts => ts ? new Date(ts * 1000).toLocaleString('en-IN', {timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : '-';
 const istDate = (off = 0) => { const d = new Date(Date.now() + off * 864e5); return new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Kolkata'}).format(d); };
@@ -47,7 +51,7 @@ async function fingerprint() {
 /* ---------- login ---------- */
 function showLogin(msg) {
   document.documentElement.dataset.theme = localStorage.getItem('lys_theme') || 'day';
-  $('#app').innerHTML = `<div class="login"><div style="margin-top:12vh"><img src="static/icon.png" alt=""><h1>Lysandra</h1></div>
+  $('#app').innerHTML = `<div class="login"><div style="margin-top:12vh"><img src="${ASSET}icon.png" alt=""><h1>Lysandra</h1></div>
   <div class="card"><h3>Admin sign in</h3>${msg ? `<p class="hint" style="color:var(--bad)">${esc(msg)}</p>` : ''}
   <label class="f">Username<input id="u" autocomplete="username"></label>
   <label class="f">Password<input id="p" type="password" autocomplete="current-password"></label>
@@ -77,7 +81,7 @@ async function boot() {
   if (!me.auth) return showLogin();
   S.csrf = me.csrf; S.user = me.user; S.info = me;
   document.documentElement.dataset.theme = localStorage.getItem('lys_theme') || 'day';
-  $('#app').innerHTML = `<div class="shell"><aside class="side" id="side"><div class="brand"><img src="static/icon.png" alt=""><b>Lysandra</b></div>
+  $('#app').innerHTML = `<div class="shell"><aside class="side" id="side"><div class="brand"><img src="${ASSET}icon.png" alt=""><b>Lysandra</b></div>
   <nav class="nav">${NAV.map(n => `<a data-p="${n[0]}">${n[1]} ${n[2]}</a>`).join('')}</nav></aside>
   <div class="main"><div class="top"><button class="g s burger" id="bg">☰</button><h2 id="title"></h2><span class="mu" id="who"></span>
   <button class="g s" id="th">🌓</button><button class="g s" id="lo">Logout</button></div><div class="page" id="page"></div>
