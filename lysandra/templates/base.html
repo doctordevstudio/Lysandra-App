@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Lysandra – Video Downloader & Player for Android{% endblock %}</title>
+<meta name="description" content="{% block desc %}{{ L.hero_subtitle }}{% endblock %}">
+<meta name="theme-color" content="#0B1F5C">
+<meta property="og:title" content="Lysandra – Video Downloader & Player for Android">
+<meta property="og:description" content="{{ L.hero_subtitle }}">
+<meta property="og:image" content="{{ url_for('site_assets', name='icon-512.png', _external=True) }}">
+<link rel="icon" href="{{ url_for('site_assets', name='icon.png') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('site_assets', name='site.css') }}">
+</head>
+<body>
+<div class="dots" aria-hidden="true"></div>
+<header class="nav">
+  <a class="brand" href="/"><img src="{{ url_for('site_assets', name='icon.png') }}" alt="" width="38" height="38"><b>Lysandra</b></a>
+  <nav class="links">
+    <a href="/">Home</a><a href="/#features">Features</a><a href="/#how">How to use</a><a href="/#premium">Premium</a><a href="/#faq">FAQ</a><a href="/support">Support</a>
+  </nav>
+  <a class="btn sm" href="/download">⬇ Download APK</a>
+  <button class="burger" id="burger" aria-label="Open menu" aria-controls="drawer" aria-expanded="false">☰</button>
+</header>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="dhead"><img src="{{ url_for('site_assets', name='icon.png') }}" alt="" width="44" height="44"><b>Lysandra</b></div>
+  <a href="/">🏠 Home</a>
+  <a href="/#features">✨ Features</a>
+  <a href="/#how">📖 How to use</a>
+  <a href="/#premium">👑 Premium</a>
+  <a href="/#faq">❓ FAQs</a>
+  <hr>
+  <a href="/privacy">🔒 Privacy Policy</a>
+  <a href="/terms">📜 Terms &amp; Conditions</a>
+  <a href="/dmca">⚖️ DMCA</a>
+  <a href="/support">💬 Customer Support</a>
+  <a href="/developer">👨‍💻 About Developer</a>
+  <a class="btn" href="/download">⬇ Download APK</a>
+</aside>
+<main>{% block content %}{% endblock %}</main>
+<footer class="foot">
+  <div class="fgrid">
+    <div><a class="brand" href="/"><img src="{{ url_for('site_assets', name='icon.png') }}" alt="" width="34" height="34"><b>Lysandra</b></a>
+      <p class="mu">Fast video downloader and player for Android.</p></div>
+    <div><h4>Explore</h4><a href="/#features">Features</a><a href="/#how">How to use</a><a href="/#premium">Premium</a><a href="/#faq">FAQs</a></div>
+    <div><h4>Legal</h4><a href="/privacy">Privacy Policy</a><a href="/terms">Terms &amp; Conditions</a><a href="/dmca">DMCA</a></div>
+    <div><h4>Help</h4><a href="/support">Customer Support</a><a href="/developer">About Developer</a>{% if L.telegram_url %}<a href="{{ L.telegram_url }}" rel="noopener">Telegram channel</a>{% endif %}</div>
+  </div>
+  <p class="copy">©️Copyright by Dr. Dev || Dr. Hamza 2026 All Rights Reserved.</p>
+</footer>
+<script src="{{ url_for('site_assets', name='site.js') }}"></script>
+</body>
+</html>

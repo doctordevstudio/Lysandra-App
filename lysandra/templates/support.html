@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Customer Support – Lysandra{% endblock %}
+{% block content %}
+<section class="sec narrow">
+  <h1>{{ S.title or 'Customer Support' }}</h1>
+  <p class="lead">{{ S.message }}</p>
+  <div class="grid3">
+    {% if S.telegram_url %}<article class="card"><div class="ico">✈️</div><h3>Telegram support</h3><p>Fastest way to reach us.</p><a class="btn" href="{{ S.telegram_url }}" rel="noopener">Open Telegram</a></article>{% endif %}
+    {% if S.channel_url %}<article class="card"><div class="ico">📣</div><h3>Official channel</h3><p>Updates, new versions and offers.</p><a class="btn ghost" href="{{ S.channel_url }}" rel="noopener">Join channel</a></article>{% endif %}
+    {% if S.email %}<article class="card"><div class="ico">✉️</div><h3>Email</h3><p>{{ S.email }}</p><a class="btn ghost" href="mailto:{{ S.email }}">Send email</a></article>{% endif %}
+  </div>
+  {% if S.hours %}<p class="mu">Support hours: {{ S.hours }}</p>{% endif %}
+  <div class="card tip"><h3>Tip for faster help</h3><p>In the app, tap the Lysandra logo in the menu or on the Customer Support screen <b>10 times quickly</b> to see your Device ID, copy it and send it to support together with your transaction ID.</p></div>
+  <p><a class="btn ghost" href="/#faq">Read the FAQs</a></p>
+</section>
+{% endblock %}

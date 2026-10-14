@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="hero-text">
+    <span class="pill">⚡ Android · v{{ L.version }}</span>
+    <h1>{{ L.hero_title }}</h1>
+    <p class="lead">{{ L.hero_subtitle }}</p>
+    <div class="cta">
+      <a class="btn big" href="/download" id="dl">⬇ Download APK</a>
+      <a class="btn ghost big" href="#how">How it works</a>
+    </div>
+    <p class="mu small">Version {{ L.version }}{% if L.size %} · {{ L.size }}{% endif %} · {{ L.requirements }} · Free</p>
+  </div>
+  <div class="phone-wrap" aria-hidden="true">
+    <div class="glow"></div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="bar"><span class="logo"></span><b>Lysandra</b><i></i><i></i></div>
+        <div class="slide"></div>
+        <div class="tabs"><s class="on">Bollywood</s><s>Hollywood</s><s>Series</s><s>Live TV</s></div>
+        <div class="cards"><div class="c c1"></div><div class="c c2"></div><div class="c c3"></div><div class="c c4"></div></div>
+        <div class="nb"><span class="on"></span><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="sec">
+  <h2>Everything you need, <span class="grad">nothing you don't</span></h2>
+  <div class="grid3">
+    {% for f in L.features %}{% set p = f.split('|') %}
+    <article class="card"><div class="ico">{{ ['⚡','🎞️','▶️','🎬','👑','🔒'][loop.index0 % 6] }}</div><h3>{{ p[0] }}</h3><p>{{ p[1] if p|length > 1 else '' }}</p></article>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="how" class="sec alt">
+  <h2>How to use <span class="grad">Lysandra</span></h2>
+  <ol class="steps">
+    {% for s in L.steps %}{% set p = s.split('|') %}
+    <li><span class="num">{{ loop.index }}</span><div><h3>{{ p[0] }}</h3><p>{{ p[1] if p|length > 1 else '' }}</p></div></li>
+    {% endfor %}
+  </ol>
+</section>
+
+<section id="premium" class="sec">
+  <h2>Go <span class="grad">Premium</span></h2>
+  <p class="lead center">No ads in every plan. Pay with any UPI app – activated on your device after verification.</p>
+  <div class="plans">
+    {% for p in plans %}
+    <article class="plan {{ 'rec' if 'RECOMMEND' in (p.badge or '')|upper else '' }}">
+      {% if p.badge %}<span class="badge">{{ p.badge }}</span>{% endif %}
+      <h3>{{ p.name }}</h3>
+      <div class="price">₹{{ p.price }}</div>
+      <p class="mu small">₹{{ '%.2f'|format(p.price / p.days) }} per day</p>
+      <ul>
+        <li>{{ 'Unlimited downloads' if not p.downloads_per_day else p.downloads_per_day ~ ' downloads / day' }}</li>
+        <li>{{ 'Unlimited watch' if not p.watch_per_day else p.watch_per_day ~ ' watch / day' }}</li>
+        <li>Ads free</li>
+      </ul>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="faq" class="sec alt">
+  <h2>Frequently asked <span class="grad">questions</span></h2>
+  <div class="faq">
+    {% for q in L.faqs %}{% set p = q.split('|') %}
+    <details><summary>{{ p[0] }}</summary><p>{{ p[1] if p|length > 1 else '' }}</p></details>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sec final">
+  <h2>Ready to try Lysandra?</h2>
+  <p class="lead center">Download the APK and start saving videos in seconds.</p>
+  <p class="center"><a class="btn big" href="/download">⬇ Download APK</a></p>
+  <details class="install"><summary>Installing from outside the Play Store?</summary>
+    <p>Open the downloaded file and allow “Install unknown apps” for your browser or file manager when Android asks. If Google Play Protect shows a warning, tap <b>More details → Install anyway</b>, or open Play Protect and choose <b>Scan app</b> first.</p></details>
+</section>
+{% endblock %}
